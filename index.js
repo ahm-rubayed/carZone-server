@@ -22,6 +22,8 @@ async function run() {
         const bookingCollection = client.db('carZone').collection('booking')
         const productsCollection = client.db('carZone').collection('products')
         const paymentsCollection = client.db('carZone').collection('payments');
+        const sellersCollection = client.db('carZone').collection('seller');
+        const buyersCollection = client.db('carZone').collection('buyer');
 
         app.get('/users', async (req, res) => {
             const query = {};
@@ -33,6 +35,31 @@ async function run() {
             const user = req.body;
             console.log(user);
             const result = await usersCollection.insertOne(user);
+            res.send(result);
+        })
+
+        app.get('/seller', async (req, res) => {
+            const query = {};
+            const sellers = await sellersCollection.find(query).toArray();
+            res.send(sellers);
+        });
+
+        app.post('/seller', async (req, res) => {
+            const user = req.body;
+            console.log(user);
+            const result = await sellersCollection.insertOne(user);
+            res.send(result);
+        })
+
+        app.get('/buyer', async (req, res) => {
+            const query = {};
+            const buyers = await buyersCollection.find(query).toArray();
+            res.send(buyers);
+        });
+
+        app.post('/buyer', async (req, res) => {
+            const user = req.body;
+            const result = await buyersCollection.insertOne(user);
             res.send(result);
         })
 
@@ -129,14 +156,14 @@ async function run() {
         app.get('/users/seller/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email }
-            const user = await usersCollection.findOne(query);
+            const user = await sellersCollection.findOne(query);
             res.send({ isSeller: user?.role === 'seller' });
         })
 
         app.get('/users/buyer/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email }
-            const user = await usersCollection.findOne(query);
+            const user = await buyersCollection.findOne(query);
             res.send({ isBuyer: user?.role === 'buyer' });
         })
 
@@ -152,6 +179,20 @@ async function run() {
         //     const result = await usersCollection.updateOne(filter, updatedDoc, options);
         //     res.send(result);
         // });
+
+        app.delete('/seller/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await sellersCollection.deleteOne(filter);
+            res.send(result);
+        })
+
+        app.delete('/buyer/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) };
+            const result = await buyersCollection.deleteOne(filter);
+            res.send(result);
+        })
     }
     finally{
 
