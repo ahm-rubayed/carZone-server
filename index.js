@@ -23,6 +23,7 @@ async function run() {
         const paymentsCollection = client.db('carZone').collection('payments');
         const sellersCollection = client.db('carZone').collection('seller');
         const buyersCollection = client.db('carZone').collection('buyer');
+        const adminCollection = client.db('carZone').collection('admin');
 
         app.get('/seller', async (req, res) => {
             const query = {};
@@ -135,7 +136,7 @@ async function run() {
         app.get('/users/admin/:email', async (req, res) => {
             const email = req.params.email;
             const query = { email }
-            const user = await usersCollection.findOne(query);
+            const user = await adminCollection.findOne(query);
             res.send({ isAdmin: user?.role === 'admin' });
         })
 
@@ -152,17 +153,19 @@ async function run() {
             const user = await buyersCollection.findOne(query);
             res.send({ isBuyer: user?.role === 'buyer' });
         })
-        //     const id = req.params.id;
-        //     const filter = { _id: ObjectId(id) }
-        //     const options = { upsert: true };
-        //     const updatedDoc = {
-        //         $set: {
-        //             role: 'admin'
-        //         }
-        //     }
-        //     const result = await usersCollection.updateOne(filter, updatedDoc, options);
-        //     res.send(result);
-        // });
+
+        app.put('/users/buyer/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    role: 'buyer'
+                }
+            }
+            const result = await buyersCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
 
         app.delete('/seller/:id', async (req, res) => {
             const id = req.params.id;
