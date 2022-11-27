@@ -17,26 +17,12 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 
 async function run() {
     try{
-        const usersCollection = client.db('carZone').collection('users')
         const categoriesCollection = client.db('carZone').collection('categories')
         const bookingCollection = client.db('carZone').collection('booking')
         const productsCollection = client.db('carZone').collection('products')
         const paymentsCollection = client.db('carZone').collection('payments');
         const sellersCollection = client.db('carZone').collection('seller');
         const buyersCollection = client.db('carZone').collection('buyer');
-
-        app.get('/users', async (req, res) => {
-            const query = {};
-            const users = await usersCollection.find(query).toArray();
-            res.send(users);
-        });
-
-        app.post('/users', async (req, res) => {
-            const user = req.body;
-            console.log(user);
-            const result = await usersCollection.insertOne(user);
-            res.send(result);
-        })
 
         app.get('/seller', async (req, res) => {
             const query = {};
@@ -166,8 +152,6 @@ async function run() {
             const user = await buyersCollection.findOne(query);
             res.send({ isBuyer: user?.role === 'buyer' });
         })
-
-        // app.put('/users/admin/:id', async (req, res) => {
         //     const id = req.params.id;
         //     const filter = { _id: ObjectId(id) }
         //     const options = { upsert: true };
