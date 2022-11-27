@@ -36,19 +36,6 @@ async function run() {
             res.send(result);
         })
 
-        app.put('/users/seller/:id', async (req, res) => {
-            const id = req.params.id;
-            const filter = { _id: ObjectId(id) }
-            const options = { upsert: true };
-            const updatedDoc = {
-                $set: {
-                    role: 'seller'
-                }
-            }
-            const result = await usersCollection.updateOne(filter, updatedDoc, options);
-            res.send(result);
-        });
-
         app.get('/categories', async(req, res) => {
             const query = {}
             const result = await categoriesCollection.find(query).toArray();
@@ -103,7 +90,7 @@ async function run() {
         app.post('/create-payment-intent', async (req, res) => {
             const product = req.body;
             const price = product.price;
-            const amount = price * 10;
+            const amount = price * 100;
 
             const paymentIntent = await stripe.paymentIntents.create({
                 currency: 'usd',
@@ -129,8 +116,42 @@ async function run() {
                 }
             }
             const updatedResult = await productsCollection.updateOne(filter, updatedDoc)
-            res.send(result);
+            res.send(updatedResult);
+        }) 
+        
+        app.get('/users/admin/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isAdmin: user?.role === 'admin' });
         })
+
+        app.get('/users/seller/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isSeller: user?.role === 'seller' });
+        })
+
+        app.get('/users/buyer/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email }
+            const user = await usersCollection.findOne(query);
+            res.send({ isBuyer: user?.role === 'buyer' });
+        })
+
+        // app.put('/users/admin/:id', async (req, res) => {
+        //     const id = req.params.id;
+        //     const filter = { _id: ObjectId(id) }
+        //     const options = { upsert: true };
+        //     const updatedDoc = {
+        //         $set: {
+        //             role: 'admin'
+        //         }
+        //     }
+        //     const result = await usersCollection.updateOne(filter, updatedDoc, options);
+        //     res.send(result);
+        // });
     }
     finally{
 
