@@ -62,7 +62,7 @@ async function run() {
     //     res.status(403).send({ accessToken: '' })
     // });
 
-    app.get("/seller", async (req, res) => {
+    app.get("/seller", verifyJWT, async (req, res) => {
       const query = {};
       const sellers = await sellersCollection.find(query).toArray();
       res.send(sellers);
@@ -86,7 +86,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/buyer", async (req, res) => {
+    app.get("/buyer", verifyJWT, async (req, res) => {
       const query = {};
       const buyers = await buyersCollection.find(query).toArray();
       res.send(buyers);
